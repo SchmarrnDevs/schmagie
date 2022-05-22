@@ -60,13 +60,13 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
     public Collection<Identifier> getModelDependencies() {
         return Collections.emptyList(); // This model does not depend on other models.
     }
- 
+
     @Override
     public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
         return Arrays.asList(SPRITE_IDS); // The textures this model (and all its model dependencies, and their dependencies, etc...!) depends on.
     }
- 
- 
+
+
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
         JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
@@ -80,7 +80,7 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
         Renderer renderer = RendererAccess.INSTANCE.getRenderer();
         MeshBuilder builder = renderer.meshBuilder();
         QuadEmitter emitter = builder.getEmitter();
- 
+
         for(Direction direction : Direction.values()) {
             int spriteIdx = direction == Direction.UP || direction == Direction.DOWN ? 1 : 0;
 
@@ -98,13 +98,13 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
                 // Enable texture usage
                 emitter.spriteColor(0, -1, -1, -1, -1);
 
-                emitter.colorIndex(0);
+				emitter.colorIndex(direction.getId()-2);
                 // Add the quad to the mesh
                 emitter.emit();
             }
         }
         mesh = builder.build();
- 
+
         return this;
     }
 
@@ -114,37 +114,37 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
         // Don't need because we use FabricBakedModel instead. However, it's better to not return null in case some mod decides to call this function.
         return Collections.emptyList();
     }
- 
+
     @Override
     public boolean useAmbientOcclusion() {
         return true; // we want the block to have a shadow depending on the adjacent blocks
     }
- 
+
     @Override
     public boolean isBuiltin() {
         return false;
     }
- 
+
     @Override
     public boolean hasDepth() {
         return false;
     }
- 
+
     @Override
     public boolean isSideLit() {
         return true;
     }
- 
+
     @Override
     public Sprite getParticleSprite() {
         return SPRITES[1]; // Block break particle, let's use furnace_top
     }
- 
+
     @Override
     public ModelTransformation getTransformation() {
         return transformation;
     }
- 
+
     @Override
     public ModelOverrideList getOverrides() {
         return ModelOverrideList.EMPTY;
@@ -156,7 +156,7 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
     public boolean isVanillaAdapter() {
         return false; // False to trigger FabricBakedModel rendering
     }
- 
+
     @Override
     public void emitBlockQuads(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
         // Render function
@@ -179,7 +179,7 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
                 // Enable texture usage
                 emitter.spriteColor(0, -1, -1, -1, -1);
 
-                emitter.colorIndex(0);
+				emitter.colorIndex(direction.getId()-2);
                 // Add the quad to the mesh
                 emitter.emit();
             }
@@ -188,7 +188,7 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 
         // renderContext.meshConsumer().accept(mesh);
     }
- 
+
     @Override
     public void emitItemQuads(ItemStack itemStack, Supplier<Random> supplier, RenderContext renderContext) {
         renderContext.meshConsumer().accept(mesh);

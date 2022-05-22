@@ -14,24 +14,25 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockEntity {
-    private int color = 0;
+    private int[] color = new int[4];
 
     public ObeliskEntity(BlockPos blockPos, BlockState blockState) {
         super(Schmagie.OBELISK_BLOCK_ENTITY, blockPos, blockState);
     }
-    
+
     @Override
     protected void writeNbt(NbtCompound nbt) {
-        nbt.putInt("color", color);
+        nbt.putIntArray("color", color);
         super.writeNbt(nbt);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        color = nbt.getInt("color");
+        color = nbt.getIntArray("color");
     }
 
     @Nullable
@@ -47,12 +48,12 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
         return nbt;
     }
 
-    public DyeColor getColor() {
-        return DyeColor.byId(color);
+    public DyeColor getColor(Direction dir) {
+        return DyeColor.byId(color[dir.getId()-2]);
     }
 
-    public void setColor(DyeColor color) {
-        this.color = color.getId();
+    public void setColor(Direction dir, DyeColor color) {
+        this.color[dir.getId()-2] = color.getId();
     }
 
     public void sync() {
@@ -63,7 +64,7 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
     }
 
     @Override
-    public @org.jetbrains.annotations.Nullable Object getRenderAttachmentData() {
-        return getColor();
+    public int[] getRenderAttachmentData() {
+        return color;
     }
 }
