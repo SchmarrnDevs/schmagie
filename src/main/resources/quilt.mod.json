@@ -1,0 +1,36 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "dev.schmarrn",
+		"id": "schmagie",
+		"version": "${version}",
+		"metadata": {
+			"name": "Schmagie",
+			"description": "Bruder, Schmagie!",
+			"contributors": {
+				"Andreas Kohler": "Owner"
+			},
+			"license": "MIT",
+			"icon": "assets/schmagie/icon.png"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"init": "dev.schmarrn.schmagie.common.Schmagie",
+			"client_init": "dev.schmarrn.schmagie.client.SchmagieClient"
+		},
+		"depends": [
+			{
+				"id": "quilt_loader",
+				"versions": ">=0.16.0-"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=1.0.0-"
+			},
+			{
+				"id": "minecraft",
+				"versions": ">=1.18.2"
+			}
+		]
+	}
+}
