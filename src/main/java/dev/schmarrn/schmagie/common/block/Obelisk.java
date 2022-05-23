@@ -2,12 +2,15 @@ package dev.schmarrn.schmagie.common.block;
 
 import java.util.Random;
 
+import dev.schmarrn.schmagie.common.Schmagie;
 import dev.schmarrn.schmagie.common.block.entity.ObeliskEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager.Builder;
@@ -39,9 +42,9 @@ public class Obelisk extends Block implements BlockEntityProvider {
 		if (hit.getSide() == Direction.DOWN || hit.getSide() == Direction.UP) {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}
-
 		if (!world.isClient && player.getStackInHand(hand).getItem() instanceof DyeItem item && world.getBlockEntity(pos) instanceof ObeliskEntity e) {
 			e.setColor(hit.getSide(), item.getColor());
+			e.randomRune(hit.getSide());
 			e.markDirty();
 			e.sync(); // This *should* sync to the client, but it doesn't.
 

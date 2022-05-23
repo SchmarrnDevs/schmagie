@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class Staff extends MiningToolItem {
     public static final float MINING_SPEED_MULTIPLIER = 2f;
     public static final float ATTACK_DAMAGE_MULTIPLIER = 1.5f;
-    
+
     public Staff(float attackDamage, float attackSpeed, ToolMaterial toolMaterial, TagKey<Block> effectiveBlocks, Settings settings) {
         super(attackDamage, attackSpeed, toolMaterial, effectiveBlocks, settings);
     }

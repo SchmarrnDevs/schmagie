@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import com.mojang.datafixers.util.Pair;
 
 import dev.schmarrn.schmagie.common.Schmagie;
+import dev.schmarrn.schmagie.common.block.entity.ObeliskEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
@@ -42,11 +43,18 @@ import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
 public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel {
-    private static final SpriteIdentifier[] SPRITE_IDS = new SpriteIdentifier[]{
-        new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune")),
-        new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/obsidian"))
-    };
-    private Sprite[] SPRITES = new Sprite[2];
+	private static final SpriteIdentifier[] SPRITE_IDS = new SpriteIdentifier[]{
+        	new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/obsidian")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune0")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune1")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune2")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune3")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune4")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune5")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune6")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune7"))
+	};
+    private Sprite[] SPRITES = new Sprite[9];
 
     private Mesh mesh;
 
@@ -63,17 +71,42 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 
     @Override
     public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
-        return Arrays.asList(SPRITE_IDS); // The textures this model (and all its model dependencies, and their dependencies, etc...!) depends on.
+		return Arrays.asList(SPRITE_IDS);
     }
 
+	private void emitStuff(QuadEmitter emitter, ObeliskEntity entity) {
+		for(Direction direction : Direction.values()) {
+			emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+			emitter.spriteBake(0, SPRITES[0], MutableQuadView.BAKE_LOCK_UV);
+			emitter.spriteColor(0, -1, -1, -1, -1);
+			emitter.emit();
+
+			if (!direction.getAxis().isVertical()) {
+				int spriteIndex = 0;
+				if (entity != null) {
+					spriteIndex = entity.getRune(direction);
+				}
+				// Add a new face to the mesh
+				emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+				// Set the sprite of the face, must be called after .square()
+				// We haven't specified any UV coordinates, so we want to use the whole texture. BAKE_LOCK_UV does exactly that.
+				emitter.spriteBake(0, SPRITES[spriteIndex+1], MutableQuadView.BAKE_LOCK_UV);
+				// Enable texture usage
+				emitter.spriteColor(0, -1, -1, -1, -1);
+
+				emitter.colorIndex(direction.getId()-2);
+				// Add the quad to the mesh
+				emitter.emit();
+			}
+		}
+	}
 
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
         JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
         transformation = defaultBlockModel.getTransformations();
 
-        // Get the sprites
-        for(int i = 0; i < 2; ++i) {
+        for(int i = 0; i < SPRITES.length; ++i) {
             SPRITES[i] = textureGetter.apply(SPRITE_IDS[i]);
         }
         // Build the mesh using the Renderer API
@@ -81,28 +114,8 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
         MeshBuilder builder = renderer.meshBuilder();
         QuadEmitter emitter = builder.getEmitter();
 
-        for(Direction direction : Direction.values()) {
-            int spriteIdx = direction == Direction.UP || direction == Direction.DOWN ? 1 : 0;
+		this.emitStuff(emitter, null);
 
-            emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            emitter.spriteBake(0, SPRITES[1], MutableQuadView.BAKE_LOCK_UV);
-            emitter.spriteColor(0, -1, -1, -1, -1);
-            emitter.emit();
-
-            if (spriteIdx == 0) {
-                // Add a new face to the mesh
-                emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-                // Set the sprite of the face, must be called after .square()
-                // We haven't specified any UV coordinates, so we want to use the whole texture. BAKE_LOCK_UV does exactly that.
-                emitter.spriteBake(0, SPRITES[spriteIdx], MutableQuadView.BAKE_LOCK_UV);
-                // Enable texture usage
-                emitter.spriteColor(0, -1, -1, -1, -1);
-
-				emitter.colorIndex(direction.getId()-2);
-                // Add the quad to the mesh
-                emitter.emit();
-            }
-        }
         mesh = builder.build();
 
         return this;
@@ -137,7 +150,7 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 
     @Override
     public Sprite getParticleSprite() {
-        return SPRITES[1]; // Block break particle, let's use furnace_top
+        return SPRITES[0];
     }
 
     @Override
@@ -160,30 +173,8 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
     @Override
     public void emitBlockQuads(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
         // Render function
-        Schmagie.LOGGER.info("Render Obelisk Model");
         QuadEmitter emitter = renderContext.getEmitter();
-        for(Direction direction : Direction.values()) {
-            int spriteIdx = direction == Direction.UP || direction == Direction.DOWN ? 1 : 0;
-
-            emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-            emitter.spriteBake(0, SPRITES[1], MutableQuadView.BAKE_LOCK_UV);
-            emitter.spriteColor(0, -1, -1, -1, -1);
-            emitter.emit();
-
-            if (spriteIdx == 0) { // Render rune
-                // Add a new face to the mesh
-                emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-                // Set the sprite of the face, must be called after .square()
-                // We haven't specified any UV coordinates, so we want to use the whole texture. BAKE_LOCK_UV does exactly that.
-                emitter.spriteBake(0, SPRITES[spriteIdx], MutableQuadView.BAKE_LOCK_UV);
-                // Enable texture usage
-                emitter.spriteColor(0, -1, -1, -1, -1);
-
-				emitter.colorIndex(direction.getId()-2);
-                // Add the quad to the mesh
-                emitter.emit();
-            }
-        }
+		this.emitStuff(emitter, (ObeliskEntity) blockRenderView.getBlockEntity(blockPos));
         // We just render the mesh
 
         // renderContext.meshConsumer().accept(mesh);

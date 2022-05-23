@@ -16,8 +16,11 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
+import java.util.Random;
+
 public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockEntity {
     private int[] color = new int[4];
+	private int[] rune = new int[4];
 
     public ObeliskEntity(BlockPos blockPos, BlockState blockState) {
         super(Schmagie.OBELISK_BLOCK_ENTITY, blockPos, blockState);
@@ -26,6 +29,7 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
     @Override
     protected void writeNbt(NbtCompound nbt) {
         nbt.putIntArray("color", color);
+		nbt.putIntArray("rune", rune);
         super.writeNbt(nbt);
     }
 
@@ -33,6 +37,7 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         color = nbt.getIntArray("color");
+		rune = nbt.getIntArray("rune");
     }
 
     @Nullable
@@ -55,6 +60,20 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
     public void setColor(Direction dir, DyeColor color) {
         this.color[dir.getId()-2] = color.getId();
     }
+
+	public void randomRune(Direction dir) {
+		setRune(dir, new Random().nextInt(0, 8));
+	}
+
+	public void setRune(Direction dir, int i) {
+		if (this.rune.length != 4 || i < 0 || i >= 8) return;
+		this.rune[dir.getId()-2] = i;
+	}
+
+	public int getRune(Direction dir) {
+		if (this.rune.length != 4) return 0;
+		return this.rune[dir.getId()-2];
+	}
 
     public void sync() {
         if (this.hasWorld() && !this.getWorld().isClient) {

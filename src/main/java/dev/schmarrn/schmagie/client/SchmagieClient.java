@@ -30,7 +30,6 @@ public class SchmagieClient implements ClientModInitializer {
             ObeliskEntity e = (ObeliskEntity) view.getBlockEntity(pos);
             if (e == null) return 0;
 			int[] colordata = e.getRenderAttachmentData();
-			Schmagie.LOGGER.info("colordata length: {}, tintIndex: {}, pos: {}", colordata.length, tintIndex, pos);
 			if (colordata.length != 4) return 0;
             DyeColor col = DyeColor.byId(e.getRenderAttachmentData()[tintIndex]);
             return col.getSignColor();
