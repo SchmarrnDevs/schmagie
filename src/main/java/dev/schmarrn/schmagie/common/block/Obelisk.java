@@ -1,16 +1,12 @@
 package dev.schmarrn.schmagie.common.block;
 
-import java.util.Random;
-
-import dev.schmarrn.schmagie.common.Schmagie;
 import dev.schmarrn.schmagie.common.block.entity.ObeliskEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager.Builder;
@@ -20,7 +16,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 public class Obelisk extends Block implements BlockEntityProvider {
 	public static final BooleanProperty SYNC_HACK = BooleanProperty.of("sync_hack");
@@ -29,6 +30,19 @@ public class Obelisk extends Block implements BlockEntityProvider {
 		super(settings);
 
 		setDefaultState(getStateManager().getDefaultState().with(SYNC_HACK, false));
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		VoxelShape shape = VoxelShapes.empty();
+		shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0, 0, 0.125, 1, 1, 0.875));
+		shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0.125, 0, 0.9375, 0.875, 1, 1));
+		shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0.125, 0, 0, 0.875, 1, 0.0625));
+		shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0.0625, 0, 0.875, 0.9375, 1, 0.9375));
+		shape = VoxelShapes.union(shape, VoxelShapes.cuboid(0.0625, 0, 0.0625, 0.9375, 1, 0.125));
+
+		return shape;
 	}
 
 	@Override

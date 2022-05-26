@@ -54,9 +54,11 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune6")),
 			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune7"))
 	};
-    private Sprite[] SPRITES = new Sprite[9];
+    private final Sprite[] sprites = new Sprite[9];
 
-    private Mesh mesh;
+	private static final float PIXEL = 1.0f/16.0f;
+
+	private Mesh mesh;
 
     private static final Identifier DEFAULT_BLOCK_MODEL = new Identifier("minecraft:block/block");
 
@@ -74,28 +76,54 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 		return Arrays.asList(SPRITE_IDS);
     }
 
-	private void emitStuff(QuadEmitter emitter, ObeliskEntity entity) {
-		for(Direction direction : Direction.values()) {
-			emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-			emitter.spriteBake(0, SPRITES[0], MutableQuadView.BAKE_LOCK_UV);
-			emitter.spriteColor(0, -1, -1, -1, -1);
-			emitter.emit();
+	private void pixel_square_emit(QuadEmitter emitter, Direction direction, int left, int right, int depth) {
+		emitter.square(direction, left*PIXEL, 0.0f, right*PIXEL, 1.0f, depth*PIXEL);
+		emitter.spriteBake(0, sprites[0], MutableQuadView.BAKE_LOCK_UV);
+		emitter.spriteColor(0, -1, -1, -1, -1);
+		emitter.emit();
+	}
 
+	private void pixel_square_emit(QuadEmitter emitter, Direction direction, int left, int bottom, int right, int top, int depth) {
+		emitter.square(direction, left*PIXEL, bottom*PIXEL, right*PIXEL, top*PIXEL, depth*PIXEL);
+		emitter.spriteBake(0, sprites[0], MutableQuadView.BAKE_LOCK_UV);
+		emitter.spriteColor(0, -1, -1, -1, -1);
+		emitter.emit();
+	}
+
+	private void bake(QuadEmitter emitter) {
+		for (Direction direction : Direction.values()) {
+			if (direction.getAxis().isVertical()) {
+				// Render Top / Bottom Face
+				pixel_square_emit(emitter, direction, 2, 14, 0);
+
+				pixel_square_emit(emitter, direction, 1, 1, 2, 15, 0);
+				pixel_square_emit(emitter, direction, 14, 1, 15, 15, 0);
+
+				pixel_square_emit(emitter, direction, 0, 2, 1, 14, 0);
+				pixel_square_emit(emitter, direction, 15, 2, 16, 14, 0);
+			} else {
+				// Outer Face
+				pixel_square_emit(emitter, direction, 2, 14, 0);
+				// Inner 2 Side Squares
+				pixel_square_emit(emitter, direction, 1, 2, 1);
+				pixel_square_emit(emitter, direction, 14, 15, 1);
+				// Innerererer 2 Side Squares
+				pixel_square_emit(emitter, direction, 0, 1, 2);
+				pixel_square_emit(emitter, direction, 15, 16, 2);
+			}
+		}
+	}
+
+	private void emitRunes(QuadEmitter emitter, ObeliskEntity entity) {
+		for(Direction direction : Direction.values()) {
 			if (!direction.getAxis().isVertical()) {
-				int spriteIndex = 0;
-				if (entity != null) {
-					spriteIndex = entity.getRune(direction);
-				}
-				// Add a new face to the mesh
-				emitter.square(direction, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-				// Set the sprite of the face, must be called after .square()
-				// We haven't specified any UV coordinates, so we want to use the whole texture. BAKE_LOCK_UV does exactly that.
-				emitter.spriteBake(0, SPRITES[spriteIndex+1], MutableQuadView.BAKE_LOCK_UV);
+				int spriteIndex = entity.getRune(direction);
+				emitter.square(direction, 2.0f / 16.0f, 0.0f, 1.0f - 2.0f / 16.0f, 1.0f, 0.0f);
+				emitter.spriteBake(0, sprites[spriteIndex + 1], MutableQuadView.BAKE_LOCK_UV);
 				// Enable texture usage
 				emitter.spriteColor(0, -1, -1, -1, -1);
-
-				emitter.colorIndex(direction.getId()-2);
-				// Add the quad to the mesh
+				// Assign each direction their own texture index
+				emitter.colorIndex(direction.getId() - 2);
 				emitter.emit();
 			}
 		}
@@ -106,15 +134,15 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
         JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
         transformation = defaultBlockModel.getTransformations();
 
-        for(int i = 0; i < SPRITES.length; ++i) {
-            SPRITES[i] = textureGetter.apply(SPRITE_IDS[i]);
+        for(int i = 0; i < sprites.length; ++i) {
+            sprites[i] = textureGetter.apply(SPRITE_IDS[i]);
         }
         // Build the mesh using the Renderer API
         Renderer renderer = RendererAccess.INSTANCE.getRenderer();
         MeshBuilder builder = renderer.meshBuilder();
         QuadEmitter emitter = builder.getEmitter();
 
-		this.emitStuff(emitter, null);
+		this.bake(emitter);
 
         mesh = builder.build();
 
@@ -150,7 +178,7 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 
     @Override
     public Sprite getParticleSprite() {
-        return SPRITES[0];
+        return sprites[0];
     }
 
     @Override
@@ -174,10 +202,8 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
     public void emitBlockQuads(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
         // Render function
         QuadEmitter emitter = renderContext.getEmitter();
-		this.emitStuff(emitter, (ObeliskEntity) blockRenderView.getBlockEntity(blockPos));
-        // We just render the mesh
-
-        // renderContext.meshConsumer().accept(mesh);
+		renderContext.meshConsumer().accept(mesh);
+		this.emitRunes(emitter, (ObeliskEntity) blockRenderView.getBlockEntity(blockPos));
     }
 
     @Override
