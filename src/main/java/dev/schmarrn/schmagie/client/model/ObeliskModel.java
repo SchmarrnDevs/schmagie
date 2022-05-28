@@ -44,7 +44,7 @@ import net.minecraft.world.BlockRenderView;
 @Environment(EnvType.CLIENT)
 public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel {
 	private static final SpriteIdentifier[] SPRITE_IDS = new SpriteIdentifier[]{
-        	new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/obsidian")),
+			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/obsidian")),
 			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune0")),
 			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune1")),
 			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune2")),
@@ -54,37 +54,37 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune6")),
 			new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune7"))
 	};
-    private final Sprite[] sprites = new Sprite[9];
+	private final Sprite[] sprites = new Sprite[9];
 
-	private static final float PIXEL = 1.0f/16.0f;
+	private static final float PIXEL = 1.0f / 16.0f;
 
 	private Mesh mesh;
 
-    private static final Identifier DEFAULT_BLOCK_MODEL = new Identifier("minecraft:block/block");
+	private static final Identifier DEFAULT_BLOCK_MODEL = new Identifier("minecraft:block/block");
 
-    private ModelTransformation transformation;
+	private ModelTransformation transformation;
 
-    // Unbaked Model
+	// Unbaked Model
 
-    @Override
-    public Collection<Identifier> getModelDependencies() {
-        return Collections.emptyList(); // This model does not depend on other models.
-    }
+	@Override
+	public Collection<Identifier> getModelDependencies() {
+		return Collections.emptyList(); // This model does not depend on other models.
+	}
 
-    @Override
-    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
+	@Override
+	public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
 		return Arrays.asList(SPRITE_IDS);
-    }
+	}
 
 	private void pixel_square_emit(QuadEmitter emitter, Direction direction, int left, int right, int depth) {
-		emitter.square(direction, left*PIXEL, 0.0f, right*PIXEL, 1.0f, depth*PIXEL);
+		emitter.square(direction, left * PIXEL, 0.0f, right * PIXEL, 1.0f, depth * PIXEL);
 		emitter.spriteBake(0, sprites[0], MutableQuadView.BAKE_LOCK_UV);
 		emitter.spriteColor(0, -1, -1, -1, -1);
 		emitter.emit();
 	}
 
 	private void pixel_square_emit(QuadEmitter emitter, Direction direction, int left, int bottom, int right, int top, int depth) {
-		emitter.square(direction, left*PIXEL, bottom*PIXEL, right*PIXEL, top*PIXEL, depth*PIXEL);
+		emitter.square(direction, left * PIXEL, bottom * PIXEL, right * PIXEL, top * PIXEL, depth * PIXEL);
 		emitter.spriteBake(0, sprites[0], MutableQuadView.BAKE_LOCK_UV);
 		emitter.spriteColor(0, -1, -1, -1, -1);
 		emitter.emit();
@@ -115,9 +115,13 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 	}
 
 	private void emitRunes(QuadEmitter emitter, ObeliskEntity entity) {
-		for(Direction direction : Direction.values()) {
+		if (entity == null) {
+			Schmagie.LOGGER.warn("emitRunes: ObeliskEntity is null");
+			return;
+		}
+		for (Direction direction : Direction.values()) {
 			if (!direction.getAxis().isVertical()) {
-				int spriteIndex = entity.getRune(direction);
+				int spriteIndex = entity.getRenderAttachmentData().getRune(direction);
 				emitter.square(direction, 2.0f / 16.0f, 0.0f, 1.0f - 2.0f / 16.0f, 1.0f, 0.0f);
 				emitter.spriteBake(0, sprites[spriteIndex + 1], MutableQuadView.BAKE_LOCK_UV);
 				// Enable texture usage
@@ -129,85 +133,86 @@ public class ObeliskModel implements UnbakedModel, BakedModel, FabricBakedModel 
 		}
 	}
 
-    @Override
-    public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-        JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
-        transformation = defaultBlockModel.getTransformations();
+	@Override
+	public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+		JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
+		transformation = defaultBlockModel.getTransformations();
 
-        for(int i = 0; i < sprites.length; ++i) {
-            sprites[i] = textureGetter.apply(SPRITE_IDS[i]);
-        }
-        // Build the mesh using the Renderer API
-        Renderer renderer = RendererAccess.INSTANCE.getRenderer();
-        MeshBuilder builder = renderer.meshBuilder();
-        QuadEmitter emitter = builder.getEmitter();
+		for (int i = 0; i < sprites.length; ++i) {
+			sprites[i] = textureGetter.apply(SPRITE_IDS[i]);
+		}
+		// Build the mesh using the Renderer API
+		Renderer renderer = RendererAccess.INSTANCE.getRenderer();
+		MeshBuilder builder = renderer.meshBuilder();
+		QuadEmitter emitter = builder.getEmitter();
 
 		this.bake(emitter);
 
-        mesh = builder.build();
+		mesh = builder.build();
 
-        return this;
-    }
+		return this;
+	}
 
-    // Baked Model
-    @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction face, Random random) {
-        // Don't need because we use FabricBakedModel instead. However, it's better to not return null in case some mod decides to call this function.
-        return Collections.emptyList();
-    }
+	// Baked Model
+	@Override
+	public List<BakedQuad> getQuads(BlockState state, Direction face, Random random) {
+		// Don't need because we use FabricBakedModel instead. However, it's better to not return null in case some mod decides to call this function.
+		return Collections.emptyList();
+	}
 
-    @Override
-    public boolean useAmbientOcclusion() {
-        return true; // we want the block to have a shadow depending on the adjacent blocks
-    }
+	@Override
+	public boolean useAmbientOcclusion() {
+		return true; // we want the block to have a shadow depending on the adjacent blocks
+	}
 
-    @Override
-    public boolean isBuiltin() {
-        return false;
-    }
+	@Override
+	public boolean isBuiltin() {
+		return false;
+	}
 
-    @Override
-    public boolean hasDepth() {
-        return false;
-    }
+	@Override
+	public boolean hasDepth() {
+		return false;
+	}
 
-    @Override
-    public boolean isSideLit() {
-        return true;
-    }
+	@Override
+	public boolean isSideLit() {
+		return true;
+	}
 
-    @Override
-    public Sprite getParticleSprite() {
-        return sprites[0];
-    }
+	@Override
+	public Sprite getParticleSprite() {
+		return sprites[0];
+	}
 
-    @Override
-    public ModelTransformation getTransformation() {
-        return transformation;
-    }
+	@Override
+	public ModelTransformation getTransformation() {
+		return transformation;
+	}
 
-    @Override
-    public ModelOverrideList getOverrides() {
-        return ModelOverrideList.EMPTY;
-    }
+	@Override
+	public ModelOverrideList getOverrides() {
+		return ModelOverrideList.EMPTY;
+	}
 
-    // Fabric Baked Model
+	// Fabric Baked Model
 
-    @Override
-    public boolean isVanillaAdapter() {
-        return false; // False to trigger FabricBakedModel rendering
-    }
+	@Override
+	public boolean isVanillaAdapter() {
+		return false; // False to trigger FabricBakedModel rendering
+	}
 
-    @Override
-    public void emitBlockQuads(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
-        // Render function
-        QuadEmitter emitter = renderContext.getEmitter();
+	@Override
+	public void emitBlockQuads(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
+		// Render function
+		QuadEmitter emitter = renderContext.getEmitter();
+		Schmagie.LOGGER.info("emitBlockQuads");
 		renderContext.meshConsumer().accept(mesh);
 		this.emitRunes(emitter, (ObeliskEntity) blockRenderView.getBlockEntity(blockPos));
-    }
+	}
 
-    @Override
-    public void emitItemQuads(ItemStack itemStack, Supplier<Random> supplier, RenderContext renderContext) {
-        renderContext.meshConsumer().accept(mesh);
-    }
+	@Override
+	public void emitItemQuads(ItemStack itemStack, Supplier<Random> supplier, RenderContext renderContext) {
+		renderContext.meshConsumer().accept(mesh);
+	}
 }
