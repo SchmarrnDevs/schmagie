@@ -1,5 +1,6 @@
 package dev.schmarrn.schmagie.common;
 
+import dev.schmarrn.schmagie.common.block.ObeliskBase;
 import net.minecraft.item.*;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
@@ -35,6 +36,7 @@ public class Schmagie implements ModInitializer {
 	public static BlockEntityType<ObeliskEntity> OBELISK_BLOCK_ENTITY;
 	public static final Block OBELISK_TOP = new ObeliskTop(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F));
 
+	public static final Block OBELISK_BASE = new ObeliskBase(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0f, 1200.0f));
 
 	private void registerItem(String name, Item item) {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, name), item);
@@ -50,6 +52,7 @@ public class Schmagie implements ModInitializer {
 		registerItem("wooden_staff", WOODEN_STAFF);
 		registerBlock("obelisk", OBELISK);
 		registerBlock("obelisk_top", OBELISK_TOP);
+		registerBlock("obelisk_base", OBELISK_BASE);
 
 		OBELISK_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "obelisk_block_entity"), FabricBlockEntityTypeBuilder.create(ObeliskEntity::new, OBELISK).build(null));
 	}
