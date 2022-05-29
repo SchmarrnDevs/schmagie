@@ -11,10 +11,16 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class ObeliskTopModel extends SimplerModel {
+	private final SpriteIdentifier base;
+
+	ObeliskTopModel(String base) {
+		super();
+		this.base = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(base));
+	}
 	@Override
 	SpriteIdentifier[] getSpriteIdentifiers() {
 		return new SpriteIdentifier[]{
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/obsidian"))
+				base
 		};
 	}
 

@@ -20,10 +20,17 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 public class ObeliskModel extends SimplerModel {
+	private final SpriteIdentifier base;
+
+	ObeliskModel(String base) {
+		super();
+		this.base = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(base));
+	}
+
 	@Override
 	SpriteIdentifier[] getSpriteIdentifiers() {
 		return new SpriteIdentifier[]{
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/obsidian")),
+				base,
 				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune0")),
 				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune1")),
 				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune2")),
