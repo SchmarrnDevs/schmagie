@@ -4,19 +4,30 @@ import dev.schmarrn.schmagie.common.Schmagie;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.blockstate.JState;
+import net.devtech.arrp.json.loot.JEntry;
+import net.devtech.arrp.json.loot.JLootTable;
 import net.devtech.arrp.json.models.JModel;
+import net.devtech.arrp.json.tags.JTag;
+import net.fabricmc.fabric.api.mininglevel.v1.MiningLevelManager;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.quiltmc.qsl.tag.api.QuiltTag;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static dev.schmarrn.schmagie.common.Schmagie.ITEM_GROUP;
+import static net.devtech.arrp.json.loot.JLootTable.entry;
+import static net.devtech.arrp.json.models.JModel.condition;
 
 public class Obelisks {
 	public static final RuntimeResourcePack RESOURCE_PACK = RuntimeResourcePack.create("schmagie:test");
@@ -35,6 +46,8 @@ public class Obelisks {
 			};
 		}
 	}
+
+	private static final HashMap<Identifier, JTag> tagMap = new HashMap<>();
 
 	private static final List<Identifier> IDS = new ArrayList<>();
 	private static final List<Identifier> BASE_IDS = new ArrayList<>();
@@ -61,6 +74,24 @@ public class Obelisks {
 
 		RESOURCE_PACK.addBlockState(JState.state(JState.variant(JState.model("schmagie:block/"+name))), new Identifier(Schmagie.MOD_ID, name));
 		RESOURCE_PACK.addModel(JModel.model("schmagie:block/" + obeliskType), new Identifier(Schmagie.MOD_ID, "items/"+name));
+		RESOURCE_PACK.addLootTable(
+				RuntimeResourcePack.id(Schmagie.MOD_ID, "blocks/" + name),
+				JLootTable.loot("minecraft:block")
+						.pool(JLootTable.pool()
+								.rolls(1)
+								.entry(entry().type("minecraft:item").name(id.toString()))
+								.condition(condition().condition("minecraft:survives_explosion"))
+						)
+		);
+
+		JTag pickaxe = tagMap.getOrDefault(new Identifier("minecraft:blocks/mineable/pickaxe"), JTag.tag());
+		JTag needs_diamond_tool = tagMap.getOrDefault(new Identifier("minecraft:blocks/needs_diamond_tool"), JTag.tag());
+
+		RESOURCE_PACK.addTag(new Identifier("minecraft:blocks/mineable/pickaxe"), pickaxe.add(id));
+		RESOURCE_PACK.addTag(new Identifier("minecraft:blocks/needs_diamond_tool"), needs_diamond_tool.add(id));
+
+		tagMap.put(new Identifier("minecraft:blocks/mineable/pickaxe"), pickaxe);
+		tagMap.put(new Identifier("minecraft:blocks/needs_diamond_tool"), needs_diamond_tool);
 
 		return id;
 	}
@@ -104,6 +135,8 @@ public class Obelisks {
 		addObeliskTier(Blocks.OBSIDIAN);
 		addObeliskTier(Blocks.EMERALD_BLOCK);
 
-		RRPCallback.BEFORE_VANILLA.register(a -> a.add(RESOURCE_PACK));
+		RRPCallback.AFTER_VANILLA.register(a -> {
+			a.add(RESOURCE_PACK);
+		});
 	}
 }
