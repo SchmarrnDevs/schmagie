@@ -2,10 +2,7 @@ package dev.schmarrn.schmagie.common.block;
 
 import dev.schmarrn.schmagie.common.Schmagie;
 import dev.schmarrn.schmagie.common.block.entity.ObeliskEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
@@ -20,8 +17,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class Obelisk extends Block implements BlockEntityProvider {
-	public Obelisk(Settings settings) {
-		super(settings);
+	private Block base;
+
+	public Obelisk(Block base) {
+		super(AbstractBlock.Settings.copy(base));
+
+		this.base = base;
 	}
 
 	@SuppressWarnings("deprecation")

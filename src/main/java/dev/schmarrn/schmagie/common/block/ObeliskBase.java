@@ -1,5 +1,6 @@
 package dev.schmarrn.schmagie.common.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -9,8 +10,12 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class ObeliskBase extends Block {
-	public ObeliskBase(Settings settings) {
-		super(settings);
+	private Block base;
+
+	public ObeliskBase(Block base) {
+		super(AbstractBlock.Settings.copy(base));
+
+		this.base = base;
 	}
 
 	@SuppressWarnings("deprecation")

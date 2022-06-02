@@ -1,6 +1,7 @@
 package dev.schmarrn.schmagie.common;
 
 import dev.schmarrn.schmagie.common.block.ObeliskBase;
+import dev.schmarrn.schmagie.common.block.Obelisks;
 import net.minecraft.item.*;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
@@ -32,11 +33,11 @@ public class Schmagie implements ModInitializer {
 
 	public static final Item WOODEN_STAFF = new Staff(0, 0, ToolMaterials.WOOD, BlockTags.SHOVEL_MINEABLE, new Item.Settings().group(ITEM_GROUP));
 
-	public static final Block OBELISK = new Obelisk(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F));
+//	public static final Block OBELISK = new Obelisk(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F));
 	public static BlockEntityType<ObeliskEntity> OBELISK_BLOCK_ENTITY;
-	public static final Block OBELISK_TOP = new ObeliskTop(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F));
+//	public static final Block OBELISK_TOP = new ObeliskTop(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F));
 
-	public static final Block OBELISK_BASE = new ObeliskBase(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0f, 1200.0f));
+//	public static final Block OBELISK_BASE = new ObeliskBase(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0f, 1200.0f));
 
 	private void registerItem(String name, Item item) {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, name), item);
@@ -50,10 +51,15 @@ public class Schmagie implements ModInitializer {
 	@Override
 	public void onInitialize(ModContainer mod) {
 		registerItem("wooden_staff", WOODEN_STAFF);
-		registerBlock("obelisk", OBELISK);
-		registerBlock("obelisk_top", OBELISK_TOP);
-		registerBlock("obelisk_base", OBELISK_BASE);
 
-		OBELISK_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "obelisk_block_entity"), FabricBlockEntityTypeBuilder.create(ObeliskEntity::new, OBELISK).build(null));
+		Obelisks.init();
+
+		OBELISK_BLOCK_ENTITY = Registry.register(
+				Registry.BLOCK_ENTITY_TYPE,
+				new Identifier(MOD_ID, "obelisk_block_entity"),
+				FabricBlockEntityTypeBuilder.create(
+						ObeliskEntity::new,
+						Obelisks.getObeliskBlocks().toArray(new Block[0])
+						).build(null));
 	}
 }
