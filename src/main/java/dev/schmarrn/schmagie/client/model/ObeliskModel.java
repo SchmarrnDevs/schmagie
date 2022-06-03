@@ -5,6 +5,7 @@ import dev.schmarrn.schmagie.common.block.entity.ObeliskEntity;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
+import net.fabricmc.fabric.impl.client.indigo.renderer.IndigoRenderer;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -84,6 +85,7 @@ public class ObeliskModel extends SimplerModel {
 				}
 				emitter.square(direction, 2.0f / 16.0f, 0.0f, 1.0f - 2.0f / 16.0f, 1.0f, 1f / 16f);
 				emitter.spriteBake(0, sprites[spriteIndex + 1], MutableQuadView.BAKE_LOCK_UV);
+				emitter.material(IndigoRenderer.INSTANCE.materialFinder().emissive(spriteIndex+1, true).find());
 				// Enable texture usage
 				emitter.spriteColor(0, -1, -1, -1, -1);
 				// Assign each direction their own texture index
