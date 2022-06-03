@@ -4,22 +4,17 @@ import dev.schmarrn.schmagie.common.Schmagie;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.blockstate.JState;
-import net.devtech.arrp.json.loot.JEntry;
 import net.devtech.arrp.json.loot.JLootTable;
 import net.devtech.arrp.json.models.JModel;
 import net.devtech.arrp.json.tags.JTag;
 import net.fabricmc.fabric.api.mininglevel.v1.MiningLevelManager;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.quiltmc.qsl.tag.api.QuiltTag;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +25,20 @@ import static net.devtech.arrp.json.loot.JLootTable.entry;
 import static net.devtech.arrp.json.models.JModel.condition;
 
 public class Obelisks {
-	public static final RuntimeResourcePack RESOURCE_PACK = RuntimeResourcePack.create("schmagie:test");
+	public static final RuntimeResourcePack RESOURCE_PACK = RuntimeResourcePack.create("schmagie:obelisk");
+
+	public enum EffectiveTool {
+		SHOVEL,
+		PICKAXE;
+
+		@Override
+		public String toString() {
+			return switch(this) {
+				case SHOVEL -> "shovel";
+				case PICKAXE -> "pickaxe";
+			};
+		}
+	}
 
 	public enum Type {
 		NORMAL,
@@ -53,13 +61,13 @@ public class Obelisks {
 	private static final List<Identifier> BASE_IDS = new ArrayList<>();
 	private static final List<Identifier> TOP_IDS = new ArrayList<>();
 
-	private static void addObeliskTier(Block base) {
-		BASE_IDS.add(add(base, Type.BASE));
-		IDS.add(add(base, Type.NORMAL));
-		TOP_IDS.add(add(base, Type.TOP));
+	private static void addObeliskTier(Block base, EffectiveTool tool, int miningLevel) {
+		BASE_IDS.add(add(base, tool, miningLevel, Type.BASE));
+		IDS.add(add(base, tool, miningLevel, Type.NORMAL));
+		TOP_IDS.add(add(base, tool, miningLevel, Type.TOP));
 	}
 
-	private static Identifier add(Block base, Type obeliskType) {
+	private static Identifier add(Block base, EffectiveTool tool, int miningLevel, Type obeliskType) {
 		String name = obeliskType + "_" + Registry.BLOCK.getId(base).getPath();
 		Identifier id = new Identifier(Schmagie.MOD_ID, name);
 
@@ -83,15 +91,18 @@ public class Obelisks {
 								.condition(condition().condition("minecraft:survives_explosion"))
 						)
 		);
+		if (miningLevel > 0) {
+			TagKey<Block> tmp = MiningLevelManager.getBlockTag(miningLevel);
+			Identifier toolID = new Identifier(tmp.id().getNamespace(), "blocks/" + tmp.id().getPath());
+			Schmagie.LOGGER.info("{}", toolID);
+			JTag needs_diamond_tool = tagMap.getOrDefault(toolID, JTag.tag());
+			RESOURCE_PACK.addTag(toolID, needs_diamond_tool.add(id));
+			tagMap.put(toolID, needs_diamond_tool);
+		}
 
-		JTag pickaxe = tagMap.getOrDefault(new Identifier("minecraft:blocks/mineable/pickaxe"), JTag.tag());
-		JTag needs_diamond_tool = tagMap.getOrDefault(new Identifier("minecraft:blocks/needs_diamond_tool"), JTag.tag());
-
-		RESOURCE_PACK.addTag(new Identifier("minecraft:blocks/mineable/pickaxe"), pickaxe.add(id));
-		RESOURCE_PACK.addTag(new Identifier("minecraft:blocks/needs_diamond_tool"), needs_diamond_tool.add(id));
-
-		tagMap.put(new Identifier("minecraft:blocks/mineable/pickaxe"), pickaxe);
-		tagMap.put(new Identifier("minecraft:blocks/needs_diamond_tool"), needs_diamond_tool);
+		JTag pickaxe = tagMap.getOrDefault(new Identifier("minecraft:blocks/mineable/" + tool), JTag.tag());
+		RESOURCE_PACK.addTag(new Identifier("minecraft:blocks/mineable/" + tool), pickaxe.add(id));
+		tagMap.put(new Identifier("minecraft:blocks/mineable/" + tool), pickaxe);
 
 		return id;
 	}
@@ -130,13 +141,11 @@ public class Obelisks {
 	}
 
 	public static void init() {
-		addObeliskTier(Blocks.DIRT);
-		addObeliskTier(Blocks.SANDSTONE);
-		addObeliskTier(Blocks.OBSIDIAN);
-		addObeliskTier(Blocks.EMERALD_BLOCK);
+		addObeliskTier(Blocks.DIRT, EffectiveTool.SHOVEL, 0);
+		addObeliskTier(Blocks.SANDSTONE, EffectiveTool.PICKAXE, 0);
+		addObeliskTier(Blocks.OBSIDIAN, EffectiveTool.PICKAXE, 3);
+		addObeliskTier(Blocks.EMERALD_BLOCK, EffectiveTool.PICKAXE, 2);
 
-		RRPCallback.AFTER_VANILLA.register(a -> {
-			a.add(RESOURCE_PACK);
-		});
+		RRPCallback.AFTER_VANILLA.register(a -> a.add(RESOURCE_PACK));
 	}
 }
