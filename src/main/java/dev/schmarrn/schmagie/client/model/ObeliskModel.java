@@ -79,6 +79,9 @@ public class ObeliskModel extends SimplerModel {
 		for (Direction direction : Direction.values()) {
 			if (!direction.getAxis().isVertical()) {
 				int spriteIndex = entity.getRenderAttachmentData().getRune(direction);
+				if (spriteIndex < 0) {
+					continue;
+				}
 				emitter.square(direction, 2.0f / 16.0f, 0.0f, 1.0f - 2.0f / 16.0f, 1.0f, 1f / 16f);
 				emitter.spriteBake(0, sprites[spriteIndex + 1], MutableQuadView.BAKE_LOCK_UV);
 				// Enable texture usage

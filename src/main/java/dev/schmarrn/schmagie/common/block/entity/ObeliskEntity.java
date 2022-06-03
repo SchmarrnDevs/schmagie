@@ -22,7 +22,7 @@ import java.util.Random;
 public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockEntity {
 	public static class Data {
 		private int[] color = new int[4];
-		private int[] rune = new int[4];
+		private int[] rune = {-1, -1, -1, -1};
 
 		public int[] getColor() {
 			return color;
