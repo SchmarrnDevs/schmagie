@@ -2,6 +2,9 @@ package dev.schmarrn.schmagie.common;
 
 import dev.schmarrn.schmagie.common.block.ObeliskBase;
 import dev.schmarrn.schmagie.common.block.Obelisks;
+import dev.schmarrn.schmagie.common.world.biom.NetworkBiome;
+import dev.schmarrn.schmagie.common.world.dimension.NetworkDimension;
+import net.minecraft.client.RunArgs;
 import net.minecraft.item.*;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
@@ -53,6 +56,8 @@ public class Schmagie implements ModInitializer {
 		registerItem("wooden_staff", WOODEN_STAFF);
 
 		Obelisks.init();
+		NetworkBiome.init();
+		NetworkDimension.init();
 
 		OBELISK_BLOCK_ENTITY = Registry.register(
 				Registry.BLOCK_ENTITY_TYPE,

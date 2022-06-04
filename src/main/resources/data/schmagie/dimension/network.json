@@ -1,0 +1,18 @@
+{
+  "type": "schmagie:network",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "schmagie:network",
+      "lakes": false,
+      "features": false,
+      "layers": [
+        {
+          "block": "minecraft:barrier",
+          "height": 1
+        }
+      ],
+      "structure_overrides": []
+    }
+  }
+}
