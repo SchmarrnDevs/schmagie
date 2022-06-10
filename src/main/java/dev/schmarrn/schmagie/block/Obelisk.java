@@ -1,7 +1,7 @@
-package dev.schmarrn.schmagie.common.block;
+package dev.schmarrn.schmagie.block;
 
-import dev.schmarrn.schmagie.common.Schmagie;
-import dev.schmarrn.schmagie.common.block.entity.ObeliskEntity;
+import dev.schmarrn.schmagie.Schmagie;
+import dev.schmarrn.schmagie.block.entity.ObeliskEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;

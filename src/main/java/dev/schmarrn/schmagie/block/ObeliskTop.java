@@ -1,4 +1,4 @@
-package dev.schmarrn.schmagie.common.block;
+package dev.schmarrn.schmagie.block;
 
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;

@@ -1,6 +1,6 @@
-package dev.schmarrn.schmagie.common.world.biom;
+package dev.schmarrn.schmagie.world.biom;
 
-import dev.schmarrn.schmagie.common.Schmagie;
+import dev.schmarrn.schmagie.Schmagie;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;

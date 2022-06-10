@@ -1,6 +1,6 @@
-package dev.schmarrn.schmagie.common.world.dimension;
+package dev.schmarrn.schmagie.world.dimension;
 
-import dev.schmarrn.schmagie.common.Schmagie;
+import dev.schmarrn.schmagie.Schmagie;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;

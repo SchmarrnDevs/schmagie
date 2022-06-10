@@ -1,8 +1,8 @@
-package dev.schmarrn.schmagie.common.block.entity;
+package dev.schmarrn.schmagie.block.entity;
 
 import javax.annotation.Nullable;
 
-import dev.schmarrn.schmagie.common.Schmagie;
+import dev.schmarrn.schmagie.Schmagie;
 import net.fabricmc.fabric.api.rendering.data.v1.RenderAttachmentBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -45,7 +45,7 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 	private final Data data = new Data();
 
 	public ObeliskEntity(BlockPos blockPos, BlockState blockState) {
-		super(Schmagie.OBELISK_BLOCK_ENTITY, blockPos, blockState);
+		super(SchmagieBlockEntities.OBELISK_BLOCK_ENTITY, blockPos, blockState);
 	}
 
 	@Override

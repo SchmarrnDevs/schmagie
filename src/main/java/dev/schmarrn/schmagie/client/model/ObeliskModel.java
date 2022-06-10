@@ -1,7 +1,7 @@
 package dev.schmarrn.schmagie.client.model;
 
-import dev.schmarrn.schmagie.common.Schmagie;
-import dev.schmarrn.schmagie.common.block.entity.ObeliskEntity;
+import dev.schmarrn.schmagie.Schmagie;
+import dev.schmarrn.schmagie.block.entity.ObeliskEntity;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;

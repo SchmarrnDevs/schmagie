@@ -1,4 +1,4 @@
-package dev.schmarrn.schmagie.common.item;
+package dev.schmarrn.schmagie.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

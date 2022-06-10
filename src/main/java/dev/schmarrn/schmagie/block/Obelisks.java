@@ -1,6 +1,6 @@
-package dev.schmarrn.schmagie.common.block;
+package dev.schmarrn.schmagie.block;
 
-import dev.schmarrn.schmagie.common.Schmagie;
+import dev.schmarrn.schmagie.Schmagie;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.blockstate.JState;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static dev.schmarrn.schmagie.common.Schmagie.ITEM_GROUP;
+import static dev.schmarrn.schmagie.item.SchmagieItems.ITEM_GROUP;
 import static net.devtech.arrp.json.loot.JLootTable.entry;
 import static net.devtech.arrp.json.models.JModel.condition;
 
@@ -140,7 +140,7 @@ public class Obelisks {
 		return l;
 	}
 
-	public static void init() {
+	static void init() {
 		addObeliskTier(Blocks.DIRT, EffectiveTool.SHOVEL, 0);
 		addObeliskTier(Blocks.SANDSTONE, EffectiveTool.PICKAXE, 0);
 		addObeliskTier(Blocks.OBSIDIAN, EffectiveTool.PICKAXE, 3);

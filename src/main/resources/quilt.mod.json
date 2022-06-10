@@ -15,7 +15,7 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "dev.schmarrn.schmagie.common.Schmagie",
+			"init": "dev.schmarrn.schmagie.Schmagie",
 			"client_init": "dev.schmarrn.schmagie.client.SchmagieClient"
 		},
 		"depends": [

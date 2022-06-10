@@ -1,7 +1,6 @@
 package dev.schmarrn.schmagie.client.model;
 
-import dev.schmarrn.schmagie.common.Schmagie;
-import dev.schmarrn.schmagie.common.block.Obelisks;
+import dev.schmarrn.schmagie.block.Obelisks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.ModelProviderContext;
