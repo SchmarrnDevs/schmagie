@@ -13,6 +13,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.BlockRenderView;
 
 import java.util.Collection;
@@ -96,11 +97,11 @@ public class ObeliskModel extends SimplerModel {
 	}
 
 	@Override
-	public void emitBlockQuads(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
+	public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
 		// Render the baked model
-		super.emitBlockQuads(blockRenderView, blockState, blockPos, supplier, renderContext);
+		super.emitBlockQuads(blockView, state, pos, randomSupplier, context);
 		// Render the runes on top of it
-		QuadEmitter emitter = renderContext.getEmitter();
-		this.emitRunes(emitter, (ObeliskEntity) blockRenderView.getBlockEntity(blockPos));
+		QuadEmitter emitter = context.getEmitter();
+		this.emitRunes(emitter, (ObeliskEntity) blockView.getBlockEntity(pos));
 	}
 }

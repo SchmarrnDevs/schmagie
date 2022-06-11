@@ -20,7 +20,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.random.RandomGenerator;
 import net.minecraft.world.BlockRenderView;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -90,7 +92,7 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 
 	// Baked Model
 	@Override
-	public List<BakedQuad> getQuads(BlockState state, Direction face, Random random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, RandomGenerator randomGenerator) {
 		// Don't need because we use FabricBakedModel instead. However, it's better to not return null in case some mod decides to call this function.
 		return Collections.emptyList();
 	}
@@ -136,12 +138,12 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 	}
 
 	@Override
-	public void emitBlockQuads(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Supplier<Random> supplier, RenderContext renderContext) {
-		renderContext.meshConsumer().accept(mesh);
+	public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
+		context.meshConsumer().accept(mesh);
 	}
 
 	@Override
-	public void emitItemQuads(ItemStack itemStack, Supplier<Random> supplier, RenderContext renderContext) {
+	public void emitItemQuads(ItemStack itemStack, Supplier<RandomGenerator> supplier, RenderContext renderContext) {
 		renderContext.meshConsumer().accept(mesh);
 	}
 }
