@@ -3,12 +3,15 @@ package dev.schmarrn.schmagie.client;
 import dev.schmarrn.schmagie.client.model.MyModelProvider;
 import dev.schmarrn.schmagie.block.Obelisks;
 import dev.schmarrn.schmagie.block.entity.ObeliskEntity;
+import dev.schmarrn.schmagie.item.MagicalPigmentItem;
+import dev.schmarrn.schmagie.item.MagicalPigments;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.Item;
 import net.minecraft.util.DyeColor;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
@@ -33,6 +36,11 @@ public class SchmagieClient implements ClientModInitializer {
 			DyeColor col = DyeColor.byId(e.getRenderAttachmentData().getColor()[tintIndex]);
 			return col.getSignColor();
 		}, Obelisks.getObeliskBlocks().toArray(new Block[0]));
+
+		ColorProviderRegistry.ITEM.register(
+				(stack, index) -> ((MagicalPigmentItem) (stack.getItem())).getColor().getSignColor(),
+				MagicalPigments.getMagicalPigmentItems().toArray(new Item[0])
+		);
 	}
 
 }

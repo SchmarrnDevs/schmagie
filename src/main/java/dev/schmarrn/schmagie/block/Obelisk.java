@@ -36,32 +36,6 @@ public class Obelisk extends Block implements BlockEntityProvider {
 		return shape;
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		// Only handle logic if:
-		//  - We have some kind of Dye in our Hands
-		//  - We have an Obelisk Entity
-		//  - We hit one of the sides and neither the top nor the bottom face
-		if (player.getStackInHand(hand).getItem() instanceof DyeItem item &&
-				world.getBlockEntity(pos) instanceof ObeliskEntity e &&
-				hit.getSide() != Direction.DOWN && hit.getSide() != Direction.UP) {
-			// Handle the logic on the server
-			if (!world.isClient()) {
-				Schmagie.LOGGER.info("Handle Obelisk Logic");
-				e.setColor(hit.getSide(), item.getColor());
-				e.assignRandomRune(hit.getSide());
-				e.markDirty();
-			}
-			return ActionResult.SUCCESS;
-
-		} else {
-			// If the above conditions didn't apply, execute "normal" minecraft actions like
-			// placing a block etc.
-			return super.onUse(state, world, pos, player, hand, hit);
-		}
-	}
-
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new ObeliskEntity(pos, state);

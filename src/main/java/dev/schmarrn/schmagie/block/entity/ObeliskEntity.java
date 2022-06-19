@@ -76,8 +76,6 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 		super.markDirty();
 		if (this.hasWorld()) {
 			if (!world.isClient()) {
-				Schmagie.LOGGER.info("markDirty");
-				((ServerWorld) world).getChunkManager().markForUpdate(pos);
 				world.updateListeners(pos, getCachedState(), getCachedState(), Block.NOTIFY_ALL);
 			}
 		}
@@ -108,6 +106,12 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 	public void setRune(Direction dir, int i) {
 		if (data.rune.length != 4 || i < 0 || i >= 8) return;
 		data.rune[dir.getId() - 2] = i;
+	}
+
+	public void onDyeUse(Direction dir, DyeColor color) {
+		this.setColor(dir, color);
+		this.assignRandomRune(dir);
+		this.markDirty();
 	}
 
 	@Override

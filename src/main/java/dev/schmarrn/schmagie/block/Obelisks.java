@@ -81,7 +81,7 @@ public class Obelisks {
 		Registry.register(Registry.ITEM, id, new BlockItem(block, new Item.Settings().group(ITEM_GROUP)));
 
 		RESOURCE_PACK.addBlockState(JState.state(JState.variant(JState.model("schmagie:block/"+name))), new Identifier(Schmagie.MOD_ID, name));
-		RESOURCE_PACK.addModel(JModel.model("schmagie:block/" + obeliskType), new Identifier(Schmagie.MOD_ID, "items/"+name));
+		RESOURCE_PACK.addModel(JModel.model("schmagie:block/" + obeliskType), new Identifier(Schmagie.MOD_ID, "item/"+name));
 		RESOURCE_PACK.addLootTable(
 				RuntimeResourcePack.id(Schmagie.MOD_ID, "blocks/" + name),
 				JLootTable.loot("minecraft:block")
