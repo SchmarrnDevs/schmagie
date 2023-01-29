@@ -1,6 +1,5 @@
 package dev.schmarrn.schmagie.block.entity;
 
-import javax.annotation.Nullable;
 
 import dev.schmarrn.schmagie.Schmagie;
 import net.fabricmc.fabric.api.rendering.data.v1.RenderAttachmentBlockEntity;
@@ -12,10 +11,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
@@ -88,12 +87,11 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		NbtCompound nbt = super.toInitialChunkDataNbt();
+	public NbtCompound toSyncedNbt() {
+		NbtCompound nbt = super.toSyncedNbt();
 		writeNbt(nbt);
 		return nbt;
 	}
-
 
 	public void setColor(Direction dir, DyeColor color) {
 		data.color[dir.getId() - 2] = color.getId();

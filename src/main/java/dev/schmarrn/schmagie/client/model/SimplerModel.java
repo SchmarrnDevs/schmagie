@@ -43,12 +43,14 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 
 	// Unbaked Model
 
-	@Override
-	public abstract Collection<Identifier> getModelDependencies();
+//	@Override
+//	public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
+//		return Arrays.asList(getSpriteIdentifiers());
+//	}
 
 	@Override
-	public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
-		return Arrays.asList(getSpriteIdentifiers());
+	public void resolveParents(Function<Identifier, UnbakedModel> models) {
+
 	}
 
 	protected void pixel_square_emit(QuadEmitter emitter, Direction direction, int left, int right, int depth, int spriteIndex) {
@@ -68,8 +70,8 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 	abstract void bake(QuadEmitter emitter);
 
 	@Override
-	public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-		JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
+	public BakedModel bake(ModelBaker modelBaker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+		JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) modelBaker.getModel(DEFAULT_BLOCK_MODEL);
 		transformation = defaultBlockModel.getTransformations();
 
 		SpriteIdentifier[] ids = getSpriteIdentifiers();
@@ -116,9 +118,6 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 	public boolean isSideLit() {
 		return true;
 	}
-
-	@Override
-	public abstract Sprite getParticleSprite();
 
 	@Override
 	public ModelTransformation getTransformation() {

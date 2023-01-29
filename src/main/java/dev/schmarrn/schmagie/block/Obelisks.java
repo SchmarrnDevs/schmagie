@@ -7,14 +7,16 @@ import net.devtech.arrp.json.blockstate.JState;
 import net.devtech.arrp.json.loot.JLootTable;
 import net.devtech.arrp.json.models.JModel;
 import net.devtech.arrp.json.tags.JTag;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.mininglevel.v1.MiningLevelManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +70,7 @@ public class Obelisks {
 	}
 
 	private static Identifier add(Block base, EffectiveTool tool, int miningLevel, Type obeliskType) {
-		String name = obeliskType + "_" + Registry.BLOCK.getId(base).getPath();
+		String name = obeliskType + "_" + Registries.BLOCK.getId(base).getPath();
 		Identifier id = new Identifier(Schmagie.MOD_ID, name);
 
 		Block block = switch (obeliskType) {
@@ -77,8 +79,11 @@ public class Obelisks {
 			case TOP -> new ObeliskTop(base);
 		};
 
-		Registry.register(Registry.BLOCK, id, block);
-		Registry.register(Registry.ITEM, id, new BlockItem(block, new Item.Settings().group(ITEM_GROUP)));
+		Registry.register(Registries.BLOCK, id, block);
+		BlockItem item = new BlockItem(block, new Item.Settings());
+		Registry.register(Registries.ITEM, id, item);
+
+		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> content.addItem(item));
 
 		RESOURCE_PACK.addBlockState(JState.state(JState.variant(JState.model("schmagie:block/"+name))), new Identifier(Schmagie.MOD_ID, name));
 		RESOURCE_PACK.addModel(JModel.model("schmagie:block/" + obeliskType), new Identifier(Schmagie.MOD_ID, "item/"+name));
@@ -135,7 +140,7 @@ public class Obelisks {
 	public static List<Block> getObeliskBlocks() {
 		List<Block> l = new ArrayList<>();
 		for (var id : IDS) {
-			l.add(Registry.BLOCK.get(id));
+			l.add(Registries.BLOCK.get(id));
 		}
 		return l;
 	}

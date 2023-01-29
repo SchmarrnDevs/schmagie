@@ -1,6 +1,7 @@
 package dev.schmarrn.schmagie.client.model;
 
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -9,6 +10,7 @@ import net.minecraft.util.math.Direction;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 public class ObeliskBaseModel extends SimplerModel {
 	private final SpriteIdentifier base;

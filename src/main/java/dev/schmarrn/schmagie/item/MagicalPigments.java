@@ -4,11 +4,11 @@ import dev.schmarrn.schmagie.Schmagie;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.models.JModel;
-import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class MagicalPigments {
 
 		Item item = new MagicalPigmentItem(SchmagieItems.getDefaultSettings(), color);
 
-		Registry.register(Registry.ITEM, id, item);
+		Registry.register(Registries.ITEM, id, item);
 
 		RESOURCE_PACK.addModel(
 				JModel.model("item/generated")
@@ -38,7 +38,7 @@ public class MagicalPigments {
 	public static List<Item> getMagicalPigmentItems() {
 		List<Item> l = new ArrayList<>();
 		for (var id : MAGICAL_PIGMENTS) {
-			l.add(Registry.ITEM.get(id));
+			l.add(Registries.ITEM.get(id));
 		}
 		return l;
 	}
