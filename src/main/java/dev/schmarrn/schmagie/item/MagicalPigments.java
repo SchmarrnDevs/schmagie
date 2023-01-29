@@ -4,6 +4,7 @@ import dev.schmarrn.schmagie.Schmagie;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.models.JModel;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -12,6 +13,8 @@ import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static dev.schmarrn.schmagie.item.SchmagieItems.ITEM_GROUP;
 
 public class MagicalPigments {
 	public static final RuntimeResourcePack RESOURCE_PACK = RuntimeResourcePack.create("schmagie:pigment");
@@ -25,6 +28,8 @@ public class MagicalPigments {
 		Item item = new MagicalPigmentItem(SchmagieItems.getDefaultSettings(), color);
 
 		Registry.register(Registries.ITEM, id, item);
+
+		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> content.addItem(item));
 
 		RESOURCE_PACK.addModel(
 				JModel.model("item/generated")
