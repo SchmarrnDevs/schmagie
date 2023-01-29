@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "schmagie:item/magical_dye_grayscale"
+  }
+}

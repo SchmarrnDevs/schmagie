@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "schmagie:block/obelisk_base_sandstone"
+  }
+}

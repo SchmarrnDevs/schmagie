@@ -6,46 +6,45 @@ import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.fabricmc.fabric.impl.client.indigo.renderer.IndigoRenderer;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.random.RandomGenerator;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class ObeliskModel extends SimplerModel {
-	private final SpriteIdentifier base;
+	private final Material base;
 
 	ObeliskModel(String base) {
 		super();
-		this.base = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(base));
+		this.base = new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(base));
 	}
 
 	@Override
-	SpriteIdentifier[] getSpriteIdentifiers() {
-		return new SpriteIdentifier[]{
+	Material[] getSpriteIdentifiers() {
+		return new Material[]{
 				base,
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune0")),
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune1")),
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune2")),
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune3")),
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune4")),
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune5")),
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune6")),
-				new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(Schmagie.MOD_ID, "block/rune7"))
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune0")),
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune1")),
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune2")),
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune3")),
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune4")),
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune5")),
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune6")),
+				new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(Schmagie.MOD_ID, "block/rune7"))
 		};
 	}
 
 	@Override
-	public Collection<Identifier> getModelDependencies() {
+	public Collection<ResourceLocation> getDependencies() {
 		return Collections.emptyList();
 	}
 
@@ -69,7 +68,7 @@ public class ObeliskModel extends SimplerModel {
 	}
 
 	@Override
-	public Sprite getParticleSprite() {
+	public TextureAtlasSprite getParticleIcon() {
 		return sprites[0];
 	}
 
@@ -90,14 +89,14 @@ public class ObeliskModel extends SimplerModel {
 				// Enable texture usage
 				emitter.spriteColor(0, -1, -1, -1, -1);
 				// Assign each direction their own texture index
-				emitter.colorIndex(direction.getId() - 2);
+				emitter.colorIndex(direction.get2DDataValue());
 				emitter.emit();
 			}
 		}
 	}
 
 	@Override
-	public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
+	public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context) {
 		// Render the baked model
 		super.emitBlockQuads(blockView, state, pos, randomSupplier, context);
 		// Render the runes on top of it

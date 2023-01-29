@@ -1,35 +1,33 @@
 package dev.schmarrn.schmagie.client.model;
 
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
-import net.minecraft.client.render.model.UnbakedModel;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Function;
 
 public class ObeliskBaseModel extends SimplerModel {
-	private final SpriteIdentifier base;
+	private final Material base;
 
 	ObeliskBaseModel(String base) {
 		super();
-		this.base = new SpriteIdentifier(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, new Identifier(base));
+		this.base = new Material(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(base));
 	}
 
 
 	@Override
-	SpriteIdentifier[] getSpriteIdentifiers() {
-		return new SpriteIdentifier[]{
+	Material[] getSpriteIdentifiers() {
+		return new Material[]{
 				base
 		};
 	}
 
 	@Override
-	public Collection<Identifier> getModelDependencies() {
+	public Collection<ResourceLocation> getDependencies() {
 		return Collections.emptyList();
 	}
 
@@ -53,7 +51,7 @@ public class ObeliskBaseModel extends SimplerModel {
 	}
 
 	@Override
-	public Sprite getParticleSprite() {
+	public TextureAtlasSprite getParticleIcon() {
 		return sprites[0];
 	}
 }

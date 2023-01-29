@@ -1,6 +1,5 @@
 package dev.schmarrn.schmagie.client.model;
 
-import com.mojang.datafixers.util.Pair;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
@@ -9,37 +8,38 @@ import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.*;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.random.RandomGenerator;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBakedModel {
 	private static final float PIXEL = 1f / 16f;
 
-	protected Sprite[] sprites;
+	protected TextureAtlasSprite[] sprites;
 
-	abstract SpriteIdentifier[] getSpriteIdentifiers();
+	abstract Material[] getSpriteIdentifiers();
 
 	private Mesh mesh;
 
-	private static final Identifier DEFAULT_BLOCK_MODEL = new Identifier("minecraft:block/block");
+	private static final ResourceLocation DEFAULT_BLOCK_MODEL = new ResourceLocation("minecraft:block/block");
 
-	private ModelTransformation transformation;
+	private ItemTransforms transformation;
 
 	// Unbaked Model
 
@@ -49,7 +49,7 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 //	}
 
 	@Override
-	public void resolveParents(Function<Identifier, UnbakedModel> models) {
+	public void resolveParents(Function<ResourceLocation, UnbakedModel> models) {
 
 	}
 
@@ -69,13 +69,14 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 
 	abstract void bake(QuadEmitter emitter);
 
+	@Nullable
 	@Override
-	public BakedModel bake(ModelBaker modelBaker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-		JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) modelBaker.getModel(DEFAULT_BLOCK_MODEL);
-		transformation = defaultBlockModel.getTransformations();
+	public BakedModel bake(ModelBaker modelBaker, Function<Material, TextureAtlasSprite> textureGetter, ModelState rotationContainer, ResourceLocation modelId) {
+		BuiltInModel defaultBlockModel = (BuiltInModel) modelBaker.getModel(DEFAULT_BLOCK_MODEL);
+		transformation = defaultBlockModel.getTransforms();
 
-		SpriteIdentifier[] ids = getSpriteIdentifiers();
-		sprites = new Sprite[ids.length];
+		Material[] ids = getSpriteIdentifiers();
+		sprites = new TextureAtlasSprite[ids.length];
 
 		for (int i = 0; i < sprites.length; ++i) {
 			sprites[i] = textureGetter.apply(ids[i]);
@@ -94,7 +95,7 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 
 	// Baked Model
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, RandomGenerator randomGenerator) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, RandomSource randomGenerator) {
 		// Don't need because we use FabricBakedModel instead. However, it's better to not return null in case some mod decides to call this function.
 		return Collections.emptyList();
 	}
@@ -105,28 +106,29 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 	}
 
 	@Override
-	public boolean isBuiltin() {
+	public boolean isCustomRenderer() {
 		return false;
 	}
 
 	@Override
-	public boolean hasDepth() {
+	public boolean isGui3d() {
 		return false;
 	}
 
 	@Override
-	public boolean isSideLit() {
+	public boolean usesBlockLight() {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public ModelTransformation getTransformation() {
+	public ItemTransforms getTransforms() {
 		return transformation;
 	}
 
 	@Override
-	public ModelOverrideList getOverrides() {
-		return ModelOverrideList.EMPTY;
+	public ItemOverrides getOverrides() {
+		return ItemOverrides.EMPTY;
 	}
 
 	// Fabric Baked Model
@@ -137,12 +139,12 @@ public abstract class SimplerModel implements UnbakedModel, BakedModel, FabricBa
 	}
 
 	@Override
-	public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<RandomGenerator> randomSupplier, RenderContext context) {
+	public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context) {
 		context.meshConsumer().accept(mesh);
 	}
 
 	@Override
-	public void emitItemQuads(ItemStack itemStack, Supplier<RandomGenerator> supplier, RenderContext renderContext) {
+	public void emitItemQuads(ItemStack itemStack, Supplier<RandomSource> supplier, RenderContext renderContext) {
 		renderContext.meshConsumer().accept(mesh);
 	}
 }

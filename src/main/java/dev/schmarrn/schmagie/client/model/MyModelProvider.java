@@ -5,13 +5,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.ModelProviderContext;
 import net.fabricmc.fabric.api.client.model.ModelResourceProvider;
-import net.minecraft.client.render.model.UnbakedModel;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.resources.ResourceLocation;
 
 @Environment(EnvType.CLIENT)
 public class MyModelProvider implements ModelResourceProvider {
 	@Override
-	public UnbakedModel loadModelResource(Identifier identifier, ModelProviderContext modelProviderContext) {
+	public UnbakedModel loadModelResource(ResourceLocation identifier, ModelProviderContext modelProviderContext) {
 		if (Obelisks.isObelisk(identifier)) {
 			String material = identifier.getPath().split(Obelisks.Type.NORMAL + "_")[1];
 			return new ObeliskModel("minecraft:block/" + material);

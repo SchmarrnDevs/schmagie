@@ -1,39 +1,39 @@
 package dev.schmarrn.schmagie.item;
 
 import dev.schmarrn.schmagie.block.entity.ObeliskEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
 
 public class MagicalPigmentItem extends Item {
 	private final DyeColor color;
-	public MagicalPigmentItem(Settings settings, DyeColor color) {
+	public MagicalPigmentItem(Properties settings, DyeColor color) {
 		super(settings);
 
 		this.color = color;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
+	public InteractionResult useOn(UseOnContext context) {
 		// Only handle logic if:
 		//  - We use on an obelisk block entity
 		//  - We hit one of the sides, not the top or bottom
 		//  - We are on the server
 		// If those conditions don't apply, pass.
-		BlockPos pos = context.getBlockPos();
-		Direction dir = context.getSide();
+		BlockPos pos = context.getClickedPos();
+		Direction dir = context.getHorizontalDirection();
 
-		if (context.getWorld().getBlockEntity(pos) instanceof ObeliskEntity obelisk &&
+		if (context.getLevel().getBlockEntity(pos) instanceof ObeliskEntity obelisk &&
 			dir != Direction.DOWN && dir != Direction.UP) {
-			if (!context.getWorld().isClient) {
+			if (!context.getLevel().isClientSide) {
 				obelisk.onDyeUse(dir, color);
 			}
-			return ActionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		} else {
-			return ActionResult.PASS;
+			return InteractionResult.PASS;
 		}
 	}
 

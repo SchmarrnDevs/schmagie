@@ -3,17 +3,17 @@ package dev.schmarrn.schmagie.block.entity;
 
 import dev.schmarrn.schmagie.Schmagie;
 import net.fabricmc.fabric.api.rendering.data.v1.RenderAttachmentBlockEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -28,7 +28,7 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 		}
 
 		public DyeColor getColor(Direction dir) {
-			return DyeColor.byId(this.color[dir.getId() - 2]);
+			return DyeColor.byId(this.color[dir.get2DDataValue()]);
 		}
 
 		public int[] getRune() {
@@ -37,7 +37,7 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 
 		public int getRune(Direction dir) {
 			if (this.rune.length != 4) return 0;
-			return this.rune[dir.getId() - 2];
+			return this.rune[dir.get2DDataValue()];
 		}
 	}
 
@@ -48,53 +48,53 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt) {
+	protected void saveAdditional(CompoundTag nbt) {
 		nbt.putIntArray("color", data.color);
 		nbt.putIntArray("rune", data.rune);
-		super.writeNbt(nbt);
+		super.saveAdditional(nbt);
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt) {
-		super.readNbt(nbt);
+	public void load(CompoundTag nbt) {
+		super.load(nbt);
 		data.color = nbt.getIntArray("color");
 		data.rune = nbt.getIntArray("rune");
 
 		// If we are on the client, re-render the Block because of the changed NBT Data
-		if (world != null && world.isClient()) {
-			MinecraftClient client = MinecraftClient.getInstance();
+		if (level != null && level.isClientSide()) {
+			Minecraft client = Minecraft.getInstance();
 			client.execute(() -> {
 				Schmagie.LOGGER.info("Update Client Block");
-				client.world.updateListeners(pos, getCachedState(), getCachedState(), Block.NOTIFY_LISTENERS);
+				client.level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
 			});
 		}
 	}
 
 	@Override
-	public void markDirty() {
-		super.markDirty();
-		if (this.hasWorld()) {
-			if (!world.isClient()) {
-				world.updateListeners(pos, getCachedState(), getCachedState(), Block.NOTIFY_ALL);
+	public void setChanged() {
+		super.setChanged();
+		if (this.hasLevel()) {
+			if (!level.isClientSide()) {
+				level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
 			}
 		}
 	}
 
 	@Nullable
 	@Override
-	public Packet<ClientPlayPacketListener> toUpdatePacket() {
-		return BlockEntityUpdateS2CPacket.of(this);
+	public Packet<ClientGamePacketListener> getUpdatePacket() {
+		return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override
-	public NbtCompound toSyncedNbt() {
-		NbtCompound nbt = super.toSyncedNbt();
-		writeNbt(nbt);
+	public CompoundTag getUpdateTag() {
+		CompoundTag nbt = super.getUpdateTag();
+		saveAdditional(nbt);
 		return nbt;
 	}
 
 	public void setColor(Direction dir, DyeColor color) {
-		data.color[dir.getId() - 2] = color.getId();
+		data.color[dir.get2DDataValue()] = color.getId();
 	}
 
 	public void assignRandomRune(Direction dir) {
@@ -103,13 +103,13 @@ public class ObeliskEntity extends BlockEntity implements RenderAttachmentBlockE
 
 	public void setRune(Direction dir, int i) {
 		if (data.rune.length != 4 || i < 0 || i >= 8) return;
-		data.rune[dir.getId() - 2] = i;
+		data.rune[dir.get2DDataValue()] = i;
 	}
 
 	public void onDyeUse(Direction dir, DyeColor color) {
 		this.setColor(dir, color);
 		this.assignRandomRune(dir);
-		this.markDirty();
+		this.setChanged();
 	}
 
 	@Override

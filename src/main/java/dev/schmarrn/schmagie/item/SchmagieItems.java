@@ -3,27 +3,28 @@ package dev.schmarrn.schmagie.item;
 import dev.schmarrn.schmagie.Schmagie;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.*;
 import org.quiltmc.qsl.item.setting.api.QuiltItemSettings;
 
 public class SchmagieItems {
-	public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder(new Identifier(Schmagie.MOD_ID, "schmagie")).icon(() -> new ItemStack(Items.OBSIDIAN)).build();
+	public static final CreativeModeTab ITEM_GROUP = FabricItemGroup.builder(new ResourceLocation(Schmagie.MOD_ID, "schmagie")).icon(() -> new ItemStack(Items.OBSIDIAN)).build();
 
-	public static final Item WOODEN_STAFF = new Staff(0, 0, ToolMaterials.WOOD, BlockTags.SHOVEL_MINEABLE, getDefaultSettings());
+	public static final Item WOODEN_STAFF = new Staff(0, 0, Tiers.WOOD, BlockTags.MINEABLE_WITH_SHOVEL, getDefaultSettings());
 
-	static Item.Settings getDefaultSettings() {
+	static Item.Properties getDefaultSettings() {
 		return new QuiltItemSettings();
 	}
 
 	private static void registerItem(String name, Item item) {
-		Registry.register(Registries.ITEM, new Identifier(Schmagie.MOD_ID, name), item);
+		Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(Schmagie.MOD_ID, name), item);
+
 
 		ItemGroupEvents.modifyEntriesEvent(ITEM_GROUP).register(content -> {
-			content.addItem(item);
+			content.accept(item);
 		});
 	}
 
